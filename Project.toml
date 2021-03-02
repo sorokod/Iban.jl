@@ -1,0 +1,16 @@
+name = "Iban"
+uuid = "fc00964e-0523-47c6-8ffe-685369a5ce95"
+authors = ["David Soroko <david@picamail.eu>"]
+version = "0.2.0"
+
+[deps]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[compat]
+julia = "1.5.3"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
