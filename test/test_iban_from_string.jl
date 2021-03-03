@@ -9,7 +9,7 @@ function test_error(iban_str, snippet)
         try
             iban(iban_str)      
         catch err
-            @test err isa DomainError
+            @test err isa ValidationException
             @test occursin(snippet, sprint(showerror, err)) == true
             return
         end      

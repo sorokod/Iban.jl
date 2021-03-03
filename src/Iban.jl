@@ -6,6 +6,7 @@ include("bban.jl")
 
 export is_supported_country, supported_countries
 export iban, iban_random, build
+export ValidationException
 
 """
     iban_random(
@@ -23,7 +24,7 @@ Generate a random IBAN subject to the provided constraints. For a constraint tha
 random value will be used according to the rules of the (provided or generated) country. Constraints
 that are irrelevant for a country are ignored.
 
-Failure to validate will result in a `domainError`
+Failure to validate will result in a `ValidationException`
 
 # Example
 ```julia
@@ -45,6 +46,9 @@ Dict{String,String} with 6 entries:
   "BankCode"      => "109"
   "CheckDigits"   => "26"
 
+julia> iban_random(CountryCode = "GR", BankCode = "xxx")
+ERROR: ValidationException value: "xxx"
+invalid characters [Iban.BankCode]  
 ```
 """
 function iban_random(;
@@ -118,7 +122,7 @@ Dict{String,String} with 6 entries:
   "CheckDigits"   => "29"  
   
 julia> iban(CountryCode = "GB", BankCode = "NWBK", AccountNumber = "31926819")
-ERROR: DomainError with value: nothing:
+ERROR: ValidationException value: "nothing"
 Value not provided [Iban.BranchCode]
 ```
 """
