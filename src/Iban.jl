@@ -80,7 +80,7 @@ function iban_random(;
 
     theiban = TheIban(country_code)
 
-    parse_bban(theiban, partup, true)
+    parse_bban!(theiban, partup, true)
 
     theiban.check_digits = calculate_check_digit(
         theiban.bban_str,
@@ -148,7 +148,7 @@ function iban(;
         )
 
     theiban = TheIban(CountryCode)
-    parse_bban(theiban, partup)
+    parse_bban!(theiban, partup)
 
     theiban.check_digits = calculate_check_digit(
         theiban.bban_str,
@@ -163,9 +163,6 @@ end
 
 
 
-#
-# ============= From String ===================
-#
 const CHECK_DIGIT_LENGTH = 2
 const CHECK_DIGIT_RANGE = 3:4
 const COUNTRY_CODE_LENGTH = 2
@@ -194,8 +191,8 @@ Dict{String,String} with 8 entries:
   "OwnerAccountType" => "1"
 
 julia> iban("BR9900360305000010009795493P1")
-  ERROR: DomainError with value: 99:
-  invalid check_digits, expected: 97  
+ERROR: ValidationException value: "99"
+invalid check digits, expected: 97
 ```      
 """
 function iban(iban_str::String)::Dict{String,String}
@@ -236,7 +233,7 @@ function iban(iban_str::String)::Dict{String,String}
     end
 
     partup = NamedTuple{ Tuple(keys(dict)) }(values(dict))
-    parse_bban(theiban, partup)
+    parse_bban!(theiban, partup)
 
     provided_check_digits = SubString(iban_str, CHECK_DIGIT_RANGE)
     expected = calculate_check_digit(bban_str, country_code)

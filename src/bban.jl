@@ -111,7 +111,7 @@ length(structure::BbanStructure)::Int =
 
 
 
-function parse_bban(theiban, partup, allow_random_values=false)
+function parse_bban!(theiban, partup, allow_random_values=false)
     bban_structure = for_country(theiban.country_code)
     for entry in bban_structure.entries
         parkey = Symbol(string(typeof(entry)))
@@ -152,7 +152,7 @@ is_supported_country(country_code::AbstractString) =
     haskey(bban_structures_by_country, country_code)
 
 """
-    supported_countries() -> Array{String,1}
+    supported_countries()::Array{String,1}
 
 Return an array of supported country codes.
 """

@@ -30,14 +30,13 @@ const c_to_numeric = merge(
     Dict(zero_to_Z[i] => i - 1 for i = 1:length(zero_to_Z)),
     Dict(a_to_z[i] => i + 9 for i = 1:length(a_to_z)),
 )
-const NINE_NINES = 999999999
 
 function mod_97(str)
     total = 0
     for c in str
         c_numeric = c_to_numeric[c]
         total = (c_numeric > 9 ? total * 100 : total * 10) + c_numeric
-        if total > NINE_NINES
+        if total > 999999999
             total = mod(total, 97)
         end
     end
