@@ -2,12 +2,12 @@
 
 push!(LOAD_PATH,"../src/")
 
-using Iban
+using IbanGen
 using Documenter
 
 makedocs(
-    sitename = "Iban.jl",
-    modules = [Iban], 
+    sitename = "IbanGen",
+    modules = [IbanGen], 
     authors = "David Soroko"
 )
 

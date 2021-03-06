@@ -1,4 +1,4 @@
-# Iban
+# IbanGen
 
 ![Tests](https://github.com/sorokod/Iban.jl/actions/workflows/Runtests.yml/badge.svg?branch=master)
 
@@ -9,7 +9,7 @@ A Julia package for generating and validating IBANs. Library documentaion is [he
 
 ## History
 
-**Iban.jl** is a port of [iban4j](https://github.com/arturmkrtchyan/iban4j), a Java library that is published under Apache 2 license and copyrighted 2015 Artur Mkrtchyan
+**IbanGen** is a port of [iban4j](https://github.com/arturmkrtchyan/iban4j), a Java library that is published under Apache 2 license and copyrighted 2015 Artur Mkrtchyan
 
 ---
 

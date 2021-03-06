@@ -1,4 +1,3 @@
-          
 @testset "iban                [one]" begin
         result = iban(
                 CountryCode="AL",

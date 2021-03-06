@@ -1,4 +1,4 @@
-module Iban
+module IbanGen
 
 include("common.jl")
 include("check_digits.jl")
@@ -59,13 +59,13 @@ function iban_random(;
 )::Dict{String,String}  
 
     partup = (;
-        Symbol("Iban.BankCode") => BankCode,
-        Symbol("Iban.AccountNumber") => AccountNumber,
-        Symbol("Iban.BranchCode") => BranchCode,
-        Symbol("Iban.NationalCheckDigit") => NationalCheckDigit,
-        Symbol("Iban.AccountType") => AccountType,
-        Symbol("Iban.OwnerAccountType") => OwnerAccountType,
-        Symbol("Iban.IdentificationNumber") => IdentificationNumber
+        Symbol("IbanGen.BankCode") => BankCode,
+        Symbol("IbanGen.AccountNumber") => AccountNumber,
+        Symbol("IbanGen.BranchCode") => BranchCode,
+        Symbol("IbanGen.NationalCheckDigit") => NationalCheckDigit,
+        Symbol("IbanGen.AccountType") => AccountType,
+        Symbol("IbanGen.OwnerAccountType") => OwnerAccountType,
+        Symbol("IbanGen.IdentificationNumber") => IdentificationNumber
     )
 
     country_code = CountryCode === nothing ? rand(supported_countries()) : CountryCode
@@ -130,14 +130,14 @@ function iban(;
 )::Dict{String,String}
  
     partup = (;
-        Symbol("Iban.BankCode") => BankCode,
-        Symbol("Iban.AccountNumber") => AccountNumber,
-        Symbol("Iban.BranchCode") => BranchCode,
-        Symbol("Iban.NationalCheckDigit") => NationalCheckDigit,
-        Symbol("Iban.AccountType") => AccountType,
-        Symbol("Iban.OwnerAccountType") => OwnerAccountType,
-        Symbol("Iban.IdentificationNumber") => IdentificationNumber
-        )
+        Symbol("IbanGen.BankCode") => BankCode,
+        Symbol("IbanGen.AccountNumber") => AccountNumber,
+        Symbol("IbanGen.BranchCode") => BranchCode,
+        Symbol("IbanGen.NationalCheckDigit") => NationalCheckDigit,
+        Symbol("IbanGen.AccountType") => AccountType,
+        Symbol("IbanGen.OwnerAccountType") => OwnerAccountType,
+        Symbol("IbanGen.IdentificationNumber") => IdentificationNumber
+    )
 
     theiban = TheIban(CountryCode)
     parse_bban!(theiban, partup)

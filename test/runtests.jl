@@ -1,11 +1,11 @@
-using Iban
+using IbanGen
 using Test
 
 # shell> cd /Users/xor/work/julia/Iban
 #  pkg> activate .
 # test
 # or:
-# Pkg.test("Iban", test_args=["test_iban_from_string", "test_countries", "test_iban", "test_iban_random"])
+# Pkg.test("IbanGen", test_args=["test_iban_from_string", "test_countries", "test_iban", "test_iban_random"])
 
 active_tests = lowercase.(ARGS)
 

@@ -26,15 +26,15 @@ function test_error(iban_str, snippet)
         # BR97 00360305 00001 0009795493 P 1
         test_error("BR9700360305000010009795493P1_", "unexpected BBAN length, expected:")
         # BankCode(EntrySpec(:N, 8)),
-        test_error("BR970036030A000010009795493P1", "invalid characters [Iban.BankCode]")
+        test_error("BR970036030A000010009795493P1", "invalid characters [IbanGen.BankCode]")
         # BranchCode(EntrySpec(:N, 5)),
-        test_error("BR97003603050000A0009795493P1", "invalid characters [Iban.BranchCode]")
+        test_error("BR97003603050000A0009795493P1", "invalid characters [IbanGen.BranchCode]")
         # AccountNumber(EntrySpec(:N, 10))
-        test_error("BR970036030500001000979549AP1", "invalid characters [Iban.AccountNumber]")
+        test_error("BR970036030500001000979549AP1", "invalid characters [IbanGen.AccountNumber]")
         # AccountType(EntrySpec(:A, 1)),       
-        test_error("BR970036030500001000979549391", "invalid characters [Iban.AccountType]")
+        test_error("BR970036030500001000979549391", "invalid characters [IbanGen.AccountType]")
         # OwnerAccountType(EntrySpec(:C, 1)
-        test_error("BR9700360305000010009795493P_", "invalid characters [Iban.OwnerAccountType]")
+        test_error("BR9700360305000010009795493P_", "invalid characters [IbanGen.OwnerAccountType]")
         # Invalid check digits
         test_error("BR9900360305000010009795493P1", "invalid check digits")
         # Invalid check digits

@@ -1,4 +1,4 @@
-name = "Iban"
+name = "IbanGen"
 uuid = "fc00964e-0523-47c6-8ffe-685369a5ce95"
 authors = ["David Soroko <david@picamail.eu>"]
 version = "0.2.0"
