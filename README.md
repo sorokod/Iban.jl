@@ -1,4 +1,4 @@
-# Iban
+# IbanGen
 
 ![Tests](https://github.com/sorokod/Iban.jl/actions/workflows/Runtests.yml/badge.svg?branch=master)
 

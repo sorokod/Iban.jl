@@ -1,4 +1,4 @@
-# Iban.jl 
+# IbanGen 
 
 A Julia package for generating and validating IBANs. 
 
@@ -11,7 +11,7 @@ country specific.
 The overall IBAN structure is then `<country code><check digits><BBAN>`. The country-by-country attribute format of the
 `BBAN`s is captured in the IBAN registry document. All countries define a `BankCode` and `AccountNumber` structures, but some have additional attributes such as `BranchCode`, `NationalCheckDigit`, `AccountType` and `IdentificationNumber`. 
 
-**Iban.jl** is aware of these definitions and takes them into account when parsing and validating the input. The IBAN 
+**IbanGen** is aware of these definitions and takes them into account when parsing and validating the input. The IBAN 
 generating functions ( [`iban`](@ref) and [`iban_random`](@ref) ) return a dictionary with keys that are the BBAN 
 attribute names along with: `CountryCode`, `CheckDigits`and `value`. The last one is the string representation of the IBAN:
 
