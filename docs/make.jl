@@ -6,7 +6,12 @@ using Iban
 using Documenter
 
 makedocs(
-    modules = [Iban], 
     sitename = "Iban.jl",
-    authors = "unknown"
+    modules = [Iban], 
+    authors = "David Soroko"
+)
+
+# see: https://juliadocs.github.io/Documenter.jl/stable/lib/public/#Documenter.deploydocs
+deploydocs(
+    repo = "github.com/sorokod/Iban.jl.git"
 )

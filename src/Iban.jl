@@ -20,13 +20,12 @@ export ValidationException
         IdentificationNumber::Maybe{String}=nothing
     )::Dict{String,String}
 
-Generate a random IBAN subject to the provided constraints. For a constraint that is not provided a
-random value will be used according to the rules of the (provided or generated) country. Constraints
-that are irrelevant for a country are ignored.
+Generate a random IBAN subject to the provided attributes. For an attributes that is not provided, a
+random value will be used according to the rules of the (provided or generated) country. Attributes
+that are not defined for a country are ignored.
 
-Failure to validate will result in a `ValidationException`
 
-# Example
+## Example
 ```julia
 julia> iban_random()
 Dict{String,String} with 6 entries:
@@ -46,9 +45,6 @@ Dict{String,String} with 6 entries:
   "BankCode"      => "109"
   "CheckDigits"   => "26"
 
-julia> iban_random(CountryCode = "GR", BankCode = "xxx")
-ERROR: ValidationException value: "xxx"
-invalid characters [Iban.BankCode]  
 ```
 """
 function iban_random(;
@@ -108,9 +104,8 @@ end
 
  Generate an IBAN based on the provided parameters.
  
- Parsing may fail validation in which case a `DomainError` is thrown.
 
-# Example
+## Example
 ```julia
 julia> iban(CountryCode = "GB", BankCode = "NWBK", BranchCode = "601613",AccountNumber = "31926819")
 Dict{String,String} with 6 entries:
@@ -121,9 +116,6 @@ Dict{String,String} with 6 entries:
   "BankCode"      => "NWBK"
   "CheckDigits"   => "29"  
   
-julia> iban(CountryCode = "GB", BankCode = "NWBK", AccountNumber = "31926819")
-ERROR: ValidationException value: "nothing"
-Value not provided [Iban.BranchCode]
 ```
 """
 function iban(;
@@ -175,9 +167,7 @@ const BBAN_INDEX = COUNTRY_CODE_LENGTH + CHECK_DIGIT_LENGTH + 1
 
 Generate an IBAN from the provided string.     
  
-Parsing may fail validation in which case a `DomainError` is thrown.
-
-# Example
+## Example
 ```julia    
 julia> iban("BR9700360305000010009795493P1")
 Dict{String,String} with 8 entries:
@@ -190,9 +180,6 @@ Dict{String,String} with 8 entries:
   "BankCode"         => "00360305"
   "OwnerAccountType" => "1"
 
-julia> iban("BR9900360305000010009795493P1")
-ERROR: ValidationException value: "99"
-invalid check digits, expected: 97
 ```      
 """
 function iban(iban_str::String)::Dict{String,String}
@@ -282,11 +269,11 @@ mutable struct TheIban
 end
 
 
-"""
-    as_dict(theiban::TheIban) -> Dict{String,String}
-
+#=
+#############################################################
 Converts the internal IBAN representation to a `Dict`
-"""
+#############################################################
+=#
 function as_dict(theiban::TheIban)::Dict{String,String}
     result = Dict(stringify(entry) => entry.value for entry in values(theiban.bban))
     result["CountryCode"] = theiban.country_code
