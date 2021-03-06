@@ -2,16 +2,14 @@
 
 A Julia package for generating and validating IBANs. 
 
-The International Bank Account Number standard is described in Wikipedia in some detail, see the [Reference](@ref)  
-section. 
+The International Bank Account Number standard is described in Wikipedia in some detail, see [Reference](@ref). 
 
 An IBAN consists of a two character country code, followed by a two digit redundancy code (AKA "check 
 digits"), followed by a Basic Bank Account Number (BBAN) – an up to 30 alphanumeric character long string that is 
 country specific. 
 
 The overall IBAN structure is then `<country code><check digits><BBAN>`. The country-by-country attribute format of the
-`BBAN`s is captured in the IBAN registry document. All countries define a `BankCode` and `AccountNumber` structures, but 
-some have additional attributes such as `BranchCode`, `NationalCheckDigit`, `AccountType` and `IdentificationNumber`. 
+`BBAN`s is captured in the IBAN registry document. All countries define a `BankCode` and `AccountNumber` structures, but some have additional attributes such as `BranchCode`, `NationalCheckDigit`, `AccountType` and `IdentificationNumber`. 
 
 **Iban.jl** is aware of these definitions and takes them into account when parsing and validating the input. The IBAN 
 generating functions ( [`iban`](@ref) and [`iban_random`](@ref) ) return a dictionary with keys that are the BBAN 
@@ -27,24 +25,24 @@ Dict{String,String} with 5 entries:
   "CheckDigits"   => "37"
 ```
 
-All functions will throw a `DomainError` if they fail to validate the input, for example:
+IBAN generating functions, will throw a [`ValidationException`](@ref) if they fail to validate the input, for example:
 
 ```julia
 julia> iban_random(CountryCode = "DE", BankCode = "XX004748")
-ERROR: DomainError with value: XX004748:
-invalid characters [Iban.BankCode]
+ERROR: ValidationException value: "XX004748"
+invalid characters [Iban.BankCode]```
 ```
 
+---
 
-
-
-
+## Library
 
 ```@docs
 iban
 iban_random
 is_supported_country
 supported_countries
+ValidationException
 ```
 
 ---
@@ -58,14 +56,13 @@ supported_countries
 
 ---
 
-## Lineage
-
-**Iban.jl** is a port of [Iban4j](https://github.com/arturmkrtchyan/iban4j) Java library which is published under 
-Apache 2 license and copyrighted 2015 Artur Mkrtchyan
-
----
 
 ## License
+
+
+**Iban.jl** is a port of [iban4j](https://github.com/arturmkrtchyan/iban4j), a Java library published under 
+Apache 2 license and copyrighted 2015 Artur Mkrtchyan
+
 
 Copyright 2021 David Soroko except where stated otherwise in the source.
 

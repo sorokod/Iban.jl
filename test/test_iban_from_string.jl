@@ -1,6 +1,6 @@
 @testset "Build from string [sucess]" begin
-    for iban_str in map( cc -> iban_random(CountryCode=cc)["value"] ,supported_countries())
-        @test iban(iban_str)["value"] == iban_str
+    for ibanstr in map( cc -> iban_random(CountryCode=cc)["value"] ,supported_countries())
+        @test iban(ibanstr)["value"] == ibanstr
     end
 end
 
