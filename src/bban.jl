@@ -40,12 +40,6 @@ struct EntrySpec
     EntrySpec(type::Symbol, length::Int) = new(type, alphabets[type], length)
 end
 
-Base.hash(this::EntrySpec, h::UInt) = hash(this.type, hash(this.length, h))
-
-Base.isequal(left::EntrySpec, right::EntrySpec) =
-    isequal(left.type, right.type) &&
-    isequal(left.length, right.length)
-
 
 sample(spec::EntrySpec)::String = randstring(spec.alphabet, spec.length)
 
@@ -80,11 +74,6 @@ struct IdentificationNumber <: EntryType
     spec::EntrySpec
 end
 
-
-Base.hash(this::EntryType, h::UInt) = hash(typeof(this), hash(this.spec, h))
-Base.isequal(left::EntryType, right::EntryType) =
-    isequal(typeof(left), typeof(right)) &&
-    isequal(left.spec, right.spec)
 
 stringify(iban_entry) = split(string(typeof(iban_entry.entry_type)), ".")[2]    
 

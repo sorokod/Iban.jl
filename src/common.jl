@@ -23,5 +23,5 @@ Base.showerror(io::IO, ex::ValidationException) =
 
 
 ensure(condition, val, msg) =
-    if !condition throw(ValidationException(val, msg)) end
+    !condition && throw(ValidationException(val, msg))
 
