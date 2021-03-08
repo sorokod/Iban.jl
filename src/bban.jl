@@ -88,6 +88,8 @@ Base.isequal(left::EntryType, right::EntryType) =
 
 stringify(iban_entry) = split(string(typeof(iban_entry.entry_type)), ".")[2]    
 
+@memoize _symname(e::EntryType) = Symbol(typeof(e))
+
 #= 
 #############################################################
 
@@ -103,10 +105,24 @@ end
 ## Return the length of the BbanStructure in characters
 ##
 @memoize function _length(structure::BbanStructure)::Int 
-    # println("XXX memoize_cache(_length): $(length(memoize_cache(_length)))")
     mapreduce(entry -> entry.spec.length, +, structure.entries)
 end    
 
+##
+## [4 4 12] => [1:4, 5:8, 9:20]
+##  
+@memoize function _slicing(structure::BbanStructure)
+    # println("XXX memoize_cache(_slicing): $(length(memoize_cache(_slicing)))")
+    result = Tuple{Symbol,UnitRange}[]
+    offset = 1
+
+    map(structure.entries) do ent
+        symbol = _symname(ent)
+        push!(result, (symbol, UnitRange(offset, ent.spec.length + offset - 1)))
+        offset += ent.spec.length
+    end
+    result
+end    
 
 
 function parse_bban!(countrycode, partup, allow_random_values=false)

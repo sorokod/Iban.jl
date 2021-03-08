@@ -147,14 +147,6 @@ function iban(;
 end
 
 
-
-const CHECK_DIGIT_LENGTH = 2
-const CHECK_DIGIT_RANGE = 3:4
-const COUNTRY_CODE_LENGTH = 2
-const COUNTRY_CODE_RANGE = 1:2
-const BBAN_INDEX = COUNTRY_CODE_LENGTH + CHECK_DIGIT_LENGTH + 1
-
-
 """
     iban(iban_str::String)::Dict{String,String}
 
@@ -178,48 +170,32 @@ Dict{String,String} with 8 entries:
 function iban(iban_str::String)::Dict{String,String}
 
     ensure(
-        length(iban_str) >= COUNTRY_CODE_LENGTH + CHECK_DIGIT_LENGTH,
+        length(iban_str) >= 4,
         iban_str, "value too short"
     )
 
-    country_code = SubString(iban_str, COUNTRY_CODE_RANGE)
+    country_code = SubString(iban_str, 1, 2)
     bban_structure = for_country(country_code)
     ensure(
         bban_structure !== nothing,
         country_code, "country code not supported"
     )
 
-    bban_str = SubString(iban_str, BBAN_INDEX)
+    bban_str = SubString(iban_str, 5)
     ensure(
         _length(bban_structure) == length(bban_str),
         bban_str, "unexpected BBAN length, expected: $(_length(bban_structure))"
     )
 
     
-    dict = Dict()
+    dict = Dict(slice[1] => bban_str[slice[2]] for slice in _slicing(bban_structure))
+    theiban = parse_bban!(country_code, dict)
 
-    bban_entry_offset = 1
-    for entry in bban_structure.entries
-        entry_length = entry.spec.length
-        entry_value = SubString(
-            bban_str,
-            bban_entry_offset,
-            bban_entry_offset + entry_length - 1,
-        )
-        
-        dict[Symbol(typeof(entry))] = entry_value
-
-        bban_entry_offset += entry_length
-    end
-
-    partup = NamedTuple{ Tuple(keys(dict)) }(values(dict))
-    theiban = parse_bban!(country_code, partup)
-
-    provided_check_digits = SubString(iban_str, CHECK_DIGIT_RANGE)
+    provided = SubString(iban_str, 3, 4)
     expected = calculate_check_digit(bban_str, country_code)
     ensure(
-        expected == provided_check_digits,
-        provided_check_digits, "invalid check digits, expected: $(expected)" 
+        expected == provided,
+        provided, "invalid check digits, expected: $(expected)" 
     )
 
     theiban.check_digits = expected
