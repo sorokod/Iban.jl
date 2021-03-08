@@ -109,7 +109,15 @@ end
 
 
 
-function parse_bban!(theiban, partup, allow_random_values=false)
+function parse_bban!(countrycode, partup, allow_random_values=false)
+
+    ensure(
+        is_supported_country(countrycode),
+        countrycode, "country not supported"
+    )
+
+    theiban = TheIban(countrycode)
+
     bban_structure = for_country(theiban.country_code)
     for entry in bban_structure.entries
         parkey = Symbol(typeof(entry))
@@ -124,6 +132,7 @@ function parse_bban!(theiban, partup, allow_random_values=false)
     end
 
     theiban.bban_str = mapreduce(entry -> entry.value, *, values(theiban.bban))
+    theiban
 end
 
 

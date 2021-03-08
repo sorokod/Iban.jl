@@ -69,14 +69,8 @@ function iban_random(;
     )
 
     country_code = CountryCode === nothing ? rand(supported_countries()) : CountryCode
-    ensure(
-        is_supported_country(country_code),
-        country_code, "country not supported"
-    )
 
-    theiban = TheIban(country_code)
-
-    parse_bban!(theiban, partup, true)
+    theiban = parse_bban!(country_code, partup, true)
 
     theiban.check_digits = calculate_check_digit(
         theiban.bban_str,
@@ -139,8 +133,7 @@ function iban(;
         Symbol("IbanGen.IdentificationNumber") => IdentificationNumber
     )
 
-    theiban = TheIban(CountryCode)
-    parse_bban!(theiban, partup)
+    theiban = parse_bban!(CountryCode, partup)
 
     theiban.check_digits = calculate_check_digit(
         theiban.bban_str,
@@ -202,7 +195,7 @@ function iban(iban_str::String)::Dict{String,String}
         bban_str, "unexpected BBAN length, expected: $(_length(bban_structure))"
     )
 
-    theiban = TheIban(country_code)
+    
     dict = Dict()
 
     bban_entry_offset = 1
@@ -220,7 +213,7 @@ function iban(iban_str::String)::Dict{String,String}
     end
 
     partup = NamedTuple{ Tuple(keys(dict)) }(values(dict))
-    parse_bban!(theiban, partup)
+    theiban = parse_bban!(country_code, partup)
 
     provided_check_digits = SubString(iban_str, CHECK_DIGIT_RANGE)
     expected = calculate_check_digit(bban_str, country_code)
