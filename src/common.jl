@@ -10,7 +10,7 @@ and the matching BBAN attribute
 ```julia
 julia> iban_random(CountryCode = "GR", BankCode = "xxx")
 ERROR: ValidationException value: "xxx"
-invalid characters [Iban.BankCode]  
+invalid characters [IbanGen.BankCode]  
 ```
 """
 struct ValidationException <: Exception 

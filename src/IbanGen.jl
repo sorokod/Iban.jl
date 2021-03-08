@@ -86,7 +86,7 @@ function iban_random(;
     theiban.iban_str =
         theiban.country_code * theiban.check_digits * theiban.bban_str
 
-    as_dict(theiban)
+    _as_dict(theiban)
 end
 
 
@@ -149,8 +149,8 @@ function iban(;
 
     theiban.iban_str =
         theiban.country_code * theiban.check_digits * theiban.bban_str
-
-    as_dict(theiban)
+        
+    _as_dict(theiban)
 end
 
 
@@ -198,8 +198,8 @@ function iban(iban_str::String)::Dict{String,String}
 
     bban_str = SubString(iban_str, BBAN_INDEX)
     ensure(
-        length(bban_structure) == length(bban_str),
-        bban_str, "unexpected BBAN length, expected: $(length(bban_structure))"
+        _length(bban_structure) == length(bban_str),
+        bban_str, "unexpected BBAN length, expected: $(_length(bban_structure))"
     )
 
     theiban = TheIban(country_code)
@@ -214,7 +214,7 @@ function iban(iban_str::String)::Dict{String,String}
             bban_entry_offset + entry_length - 1,
         )
         
-        dict[Symbol(string(typeof(entry)))] = entry_value
+        dict[Symbol(typeof(entry))] = entry_value
 
         bban_entry_offset += entry_length
     end
@@ -232,7 +232,7 @@ function iban(iban_str::String)::Dict{String,String}
     theiban.check_digits = expected
     theiban.iban_str = iban_str
     
-    as_dict(theiban)
+    _as_dict(theiban)
 end
 
 
@@ -274,7 +274,7 @@ end
 Converts the internal IBAN representation to a `Dict`
 #############################################################
 =#
-function as_dict(theiban::TheIban)::Dict{String,String}
+function _as_dict(theiban::TheIban)::Dict{String,String}
     result = Dict(stringify(entry) => entry.value for entry in values(theiban.bban))
     result["CountryCode"] = theiban.country_code
     result["CheckDigits"] = theiban.check_digits
