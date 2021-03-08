@@ -111,11 +111,6 @@ end
 
 function parse_bban!(countrycode, partup, allow_random_values=false)
 
-    ensure(
-        is_supported_country(countrycode),
-        countrycode, "country not supported"
-    )
-
     theiban = TheIban(countrycode)
 
     bban_structure = for_country(theiban.country_code)

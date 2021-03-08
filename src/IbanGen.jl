@@ -258,7 +258,13 @@ mutable struct TheIban
     bban_str::MaybeString
     iban_str::MaybeString
 
-    TheIban(country_code) = new(country_code, "00", [], nothing, nothing)
+    function TheIban(country_code) 
+        ensure(
+            is_supported_country(country_code),
+            country_code, "country code not supported"
+        )
+        new(country_code, "00", [], nothing, nothing)
+    end
 end
 
 
