@@ -48,14 +48,14 @@ Dict{String,String} with 6 entries:
 ```
 """
 function iban_random(;
-    CountryCode::Maybe{String}=nothing,
-    BankCode::Maybe{String}=nothing,
-    AccountNumber::Maybe{String}=nothing,
-    BranchCode::Maybe{String}=nothing,
-    NationalCheckDigit::Maybe{String}=nothing,
-    AccountType::Maybe{String}=nothing,
-    OwnerAccountType::Maybe{String}=nothing,
-    IdentificationNumber::Maybe{String}=nothing
+    CountryCode::MaybeString=nothing,
+    BankCode::MaybeString=nothing,
+    AccountNumber::MaybeString=nothing,
+    BranchCode::MaybeString=nothing,
+    NationalCheckDigit::MaybeString=nothing,
+    AccountType::MaybeString=nothing,
+    OwnerAccountType::MaybeString=nothing,
+    IdentificationNumber::MaybeString=nothing
 )::Dict{String,String}  
 
     partup = (;
@@ -122,11 +122,11 @@ function iban(;
     CountryCode::String,
     BankCode::String,
     AccountNumber::String,
-    BranchCode::Maybe{String}=nothing,
-    NationalCheckDigit::Maybe{String}=nothing,
-    AccountType::Maybe{String}=nothing,
-    OwnerAccountType::Maybe{String}=nothing,
-    IdentificationNumber::Maybe{String}=nothing
+    BranchCode::MaybeString=nothing,
+    NationalCheckDigit::MaybeString=nothing,
+    AccountType::MaybeString=nothing,
+    OwnerAccountType::MaybeString=nothing,
+    IdentificationNumber::MaybeString=nothing
 )::Dict{String,String}
  
     partup = (;
@@ -262,8 +262,8 @@ mutable struct TheIban
     country_code::String
     check_digits::String
     bban::Vector{IbanEntry}
-    bban_str::Maybe{String}
-    iban_str::Maybe{String}
+    bban_str::MaybeString
+    iban_str::MaybeString
 
     TheIban(country_code) = new(country_code, "00", [], nothing, nothing)
 end

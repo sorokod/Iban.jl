@@ -1,5 +1,5 @@
 const Maybe{T} = Union{T,Nothing}
-
+const MaybeString = Maybe{AbstractString}
 """
     ValidationException
 
@@ -14,7 +14,7 @@ invalid characters [IbanGen.BankCode]
 ```
 """
 struct ValidationException <: Exception 
-    val::Maybe{AbstractString}
+    val::MaybeString
     msg::AbstractString
 end
 
