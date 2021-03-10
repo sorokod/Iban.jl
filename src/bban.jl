@@ -41,7 +41,7 @@ struct EntrySpec
 end
 
 
-sample(spec::EntrySpec)::String = randstring(spec.alphabet, spec.length)
+_sample(spec::EntrySpec)::String = randstring(spec.alphabet, spec.length)
 
 #= 
 #############################################################
@@ -123,7 +123,7 @@ function parse_bban!(countrycode, partup, allow_random_values=false)
         parkey = Symbol(typeof(entry))
 
         if allow_random_values && ( partup[parkey] === nothing )
-            parval = sample(entry.spec)
+            parval = _sample(entry.spec)
         else    
             parval = partup[parkey]
         end    
