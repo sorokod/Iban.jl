@@ -2,6 +2,20 @@
 
 A Julia package for generating and validating IBANs. 
 
+---
+
+## Installation
+
+**IbanGen** is a registered package and can be installed via `Pkg.add`:
+
+```
+Pkg.add("IbanGen")
+```
+
+---
+
+## General
+
 The International Bank Account Number standard is described in Wikipedia in some detail, see [Reference](@ref). 
 
 An IBAN consists of a two character country code, followed by a two digit redundancy code (AKA "check 
@@ -30,7 +44,7 @@ IBAN generating functions, will throw a [`ValidationException`](@ref) if they fa
 ```julia
 julia> iban_random(CountryCode = "DE", BankCode = "XX004748")
 ERROR: ValidationException value: "XX004748"
-invalid characters [Iban.BankCode]```
+invalid characters [Iban.BankCode]
 ```
 
 ---

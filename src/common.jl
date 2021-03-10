@@ -1,5 +1,5 @@
 const Maybe{T} = Union{T,Nothing}
-
+const MaybeString = Maybe{AbstractString}
 """
     ValidationException
 
@@ -10,11 +10,11 @@ and the matching BBAN attribute
 ```julia
 julia> iban_random(CountryCode = "GR", BankCode = "xxx")
 ERROR: ValidationException value: "xxx"
-invalid characters [Iban.BankCode]  
+invalid characters [IbanGen.BankCode]  
 ```
 """
 struct ValidationException <: Exception 
-    val::Maybe{AbstractString}
+    val::MaybeString
     msg::AbstractString
 end
 
@@ -23,5 +23,5 @@ Base.showerror(io::IO, ex::ValidationException) =
 
 
 ensure(condition, val, msg) =
-    if !condition throw(ValidationException(val, msg)) end
+    !condition && throw(ValidationException(val, msg))
 

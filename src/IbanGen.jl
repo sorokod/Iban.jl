@@ -48,14 +48,14 @@ Dict{String,String} with 6 entries:
 ```
 """
 function iban_random(;
-    CountryCode::Maybe{String}=nothing,
-    BankCode::Maybe{String}=nothing,
-    AccountNumber::Maybe{String}=nothing,
-    BranchCode::Maybe{String}=nothing,
-    NationalCheckDigit::Maybe{String}=nothing,
-    AccountType::Maybe{String}=nothing,
-    OwnerAccountType::Maybe{String}=nothing,
-    IdentificationNumber::Maybe{String}=nothing
+    CountryCode::MaybeString=nothing,
+    BankCode::MaybeString=nothing,
+    AccountNumber::MaybeString=nothing,
+    BranchCode::MaybeString=nothing,
+    NationalCheckDigit::MaybeString=nothing,
+    AccountType::MaybeString=nothing,
+    OwnerAccountType::MaybeString=nothing,
+    IdentificationNumber::MaybeString=nothing
 )::Dict{String,String}  
 
     partup = (;
@@ -69,14 +69,8 @@ function iban_random(;
     )
 
     country_code = CountryCode === nothing ? rand(supported_countries()) : CountryCode
-    ensure(
-        is_supported_country(country_code),
-        country_code, "country not supported"
-    )
 
-    theiban = TheIban(country_code)
-
-    parse_bban!(theiban, partup, true)
+    theiban = parse_bban!(country_code, partup, true)
 
     theiban.check_digits = calculate_check_digit(
         theiban.bban_str,
@@ -86,7 +80,7 @@ function iban_random(;
     theiban.iban_str =
         theiban.country_code * theiban.check_digits * theiban.bban_str
 
-    as_dict(theiban)
+    _as_dict(theiban)
 end
 
 
@@ -122,11 +116,11 @@ function iban(;
     CountryCode::String,
     BankCode::String,
     AccountNumber::String,
-    BranchCode::Maybe{String}=nothing,
-    NationalCheckDigit::Maybe{String}=nothing,
-    AccountType::Maybe{String}=nothing,
-    OwnerAccountType::Maybe{String}=nothing,
-    IdentificationNumber::Maybe{String}=nothing
+    BranchCode::MaybeString=nothing,
+    NationalCheckDigit::MaybeString=nothing,
+    AccountType::MaybeString=nothing,
+    OwnerAccountType::MaybeString=nothing,
+    IdentificationNumber::MaybeString=nothing
 )::Dict{String,String}
  
     partup = (;
@@ -139,8 +133,7 @@ function iban(;
         Symbol("IbanGen.IdentificationNumber") => IdentificationNumber
     )
 
-    theiban = TheIban(CountryCode)
-    parse_bban!(theiban, partup)
+    theiban = parse_bban!(CountryCode, partup)
 
     theiban.check_digits = calculate_check_digit(
         theiban.bban_str,
@@ -149,17 +142,9 @@ function iban(;
 
     theiban.iban_str =
         theiban.country_code * theiban.check_digits * theiban.bban_str
-
-    as_dict(theiban)
+        
+    _as_dict(theiban)
 end
-
-
-
-const CHECK_DIGIT_LENGTH = 2
-const CHECK_DIGIT_RANGE = 3:4
-const COUNTRY_CODE_LENGTH = 2
-const COUNTRY_CODE_RANGE = 1:2
-const BBAN_INDEX = COUNTRY_CODE_LENGTH + CHECK_DIGIT_LENGTH + 1
 
 
 """
@@ -185,54 +170,38 @@ Dict{String,String} with 8 entries:
 function iban(iban_str::String)::Dict{String,String}
 
     ensure(
-        length(iban_str) >= COUNTRY_CODE_LENGTH + CHECK_DIGIT_LENGTH,
+        length(iban_str) >= 4,
         iban_str, "value too short"
     )
 
-    country_code = SubString(iban_str, COUNTRY_CODE_RANGE)
+    country_code = SubString(iban_str, 1, 2)
     bban_structure = for_country(country_code)
     ensure(
         bban_structure !== nothing,
         country_code, "country code not supported"
     )
 
-    bban_str = SubString(iban_str, BBAN_INDEX)
+    bban_str = SubString(iban_str, 5)
     ensure(
-        length(bban_structure) == length(bban_str),
-        bban_str, "unexpected BBAN length, expected: $(length(bban_structure))"
+        _length(bban_structure) == length(bban_str),
+        bban_str, "unexpected BBAN length, expected: $(_length(bban_structure))"
     )
 
-    theiban = TheIban(country_code)
-    dict = Dict()
+    
+    dict = Dict(slice[1] => bban_str[slice[2]] for slice in _slicing(bban_structure))
+    theiban = parse_bban!(country_code, dict)
 
-    bban_entry_offset = 1
-    for entry in bban_structure.entries
-        entry_length = entry.spec.length
-        entry_value = SubString(
-            bban_str,
-            bban_entry_offset,
-            bban_entry_offset + entry_length - 1,
-        )
-        
-        dict[Symbol(string(typeof(entry)))] = entry_value
-
-        bban_entry_offset += entry_length
-    end
-
-    partup = NamedTuple{ Tuple(keys(dict)) }(values(dict))
-    parse_bban!(theiban, partup)
-
-    provided_check_digits = SubString(iban_str, CHECK_DIGIT_RANGE)
+    provided = SubString(iban_str, 3, 4)
     expected = calculate_check_digit(bban_str, country_code)
     ensure(
-        expected == provided_check_digits,
-        provided_check_digits, "invalid check digits, expected: $(expected)" 
+        expected == provided,
+        provided, "invalid check digits, expected: $(expected)" 
     )
 
     theiban.check_digits = expected
     theiban.iban_str = iban_str
     
-    as_dict(theiban)
+    _as_dict(theiban)
 end
 
 
@@ -262,10 +231,16 @@ mutable struct TheIban
     country_code::String
     check_digits::String
     bban::Vector{IbanEntry}
-    bban_str::Maybe{String}
-    iban_str::Maybe{String}
+    bban_str::MaybeString
+    iban_str::MaybeString
 
-    TheIban(country_code) = new(country_code, "00", [], nothing, nothing)
+    function TheIban(country_code) 
+        ensure(
+            is_supported_country(country_code),
+            country_code, "country code not supported"
+        )
+        new(country_code, "00", [], nothing, nothing)
+    end
 end
 
 
@@ -274,7 +249,7 @@ end
 Converts the internal IBAN representation to a `Dict`
 #############################################################
 =#
-function as_dict(theiban::TheIban)::Dict{String,String}
+function _as_dict(theiban::TheIban)::Dict{String,String}
     result = Dict(stringify(entry) => entry.value for entry in values(theiban.bban))
     result["CountryCode"] = theiban.country_code
     result["CheckDigits"] = theiban.check_digits

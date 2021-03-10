@@ -1,4 +1,4 @@
-#=
+#= 
   Copyright 2013 Artur Mkrtchyan
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,21 +11,21 @@
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
-  limitations under the License.
-=#
+  limitations under the License. =#
 
 import Random.randstring
 import Base.length
 
-#=
+using Memoize
+
+#= 
 #############################################################
 
  EntrySpec spells out the specification for an entry .
  For example EntrySpec(:N, 5) is numeric of lenth 5
  and EntrySpec(:C, 16) is alphanumeric of lenth 16
 
-#############################################################
-=#
+############################################################# =#
 
 const alphabets = Dict(
     :A => ['A':'Z';],
@@ -40,23 +40,16 @@ struct EntrySpec
     EntrySpec(type::Symbol, length::Int) = new(type, alphabets[type], length)
 end
 
-Base.hash(this::EntrySpec, h::UInt) = hash(this.type, hash(this.length, h))
 
-Base.isequal(left::EntrySpec, right::EntrySpec) =
-    isequal(left.type, right.type) &&
-    isequal(left.length, right.length)
+_sample(spec::EntrySpec)::String = randstring(spec.alphabet, spec.length)
 
-
-sample(spec::EntrySpec)::String = randstring(spec.alphabet, spec.length)
-
-#=
+#= 
 #############################################################
 
  EntryType is a classification of IBAN entries as EntrySpecs
  according to domain types, e.g.: BankCode, BranchCode, etc...
 
-#############################################################
-=#
+############################################################# =#
 abstract type EntryType end
 
 struct BankCode <: EntryType
@@ -82,42 +75,55 @@ struct IdentificationNumber <: EntryType
 end
 
 
-Base.hash(this::EntryType, h::UInt) = hash(typeof(this), hash(this.spec, h))
-Base.isequal(left::EntryType, right::EntryType) =
-    isequal(typeof(left), typeof(right)) &&
-    isequal(left.spec, right.spec)
-
 stringify(iban_entry) = split(string(typeof(iban_entry.entry_type)), ".")[2]    
 
-#=
+@memoize _symname(e::EntryType) = Symbol(typeof(e))
+
+#= 
 #############################################################
 
 BbanStructure is an orderd collection of EntryTypes. Different
 countries would have diffrenet structures
 
-#############################################################
-=#
+############################################################# =#
 struct BbanStructure
     entries::Vector{EntryType}
 end
 
-"""
-    length(structure)
-
-Return the length of the provided `structure` in characters
-"""
-length(structure::BbanStructure)::Int =
+##
+## Return the length of the BbanStructure in characters
+##
+@memoize function _length(structure::BbanStructure)::Int 
     mapreduce(entry -> entry.spec.length, +, structure.entries)
+end    
+
+##
+## [4 4 12] => [1:4, 5:8, 9:20]
+##  
+@memoize function _slicing(structure::BbanStructure)
+    # println("XXX memoize_cache(_slicing): $(length(memoize_cache(_slicing)))")
+    result = Tuple{Symbol,UnitRange}[]
+    offset = 1
+
+    map(structure.entries) do ent
+        symbol = _symname(ent)
+        push!(result, (symbol, UnitRange(offset, ent.spec.length + offset - 1)))
+        offset += ent.spec.length
+    end
+    result
+end    
 
 
+function parse_bban!(countrycode, partup, allow_random_values=false)
 
-function parse_bban!(theiban, partup, allow_random_values=false)
+    theiban = TheIban(countrycode)
+
     bban_structure = for_country(theiban.country_code)
     for entry in bban_structure.entries
-        parkey = Symbol(string(typeof(entry)))
+        parkey = Symbol(typeof(entry))
 
         if allow_random_values && ( partup[parkey] === nothing )
-            parval = sample(entry.spec)
+            parval = _sample(entry.spec)
         else    
             parval = partup[parkey]
         end    
@@ -126,6 +132,7 @@ function parse_bban!(theiban, partup, allow_random_values=false)
     end
 
     theiban.bban_str = mapreduce(entry -> entry.value, *, values(theiban.bban))
+    theiban
 end
 
 
@@ -156,7 +163,7 @@ is_supported_country(country_code::AbstractString) =
 
 Return an array of supported country codes.
 """
-supported_countries() = collect(keys(bban_structures_by_country))
+@memoize supported_countries() = collect(keys(bban_structures_by_country))
 
 
 # *******************

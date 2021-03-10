@@ -4,6 +4,7 @@ push!(LOAD_PATH,"../src/")
 
 using IbanGen
 using Documenter
+using Memoize
 
 makedocs(
     sitename = "IbanGen",
