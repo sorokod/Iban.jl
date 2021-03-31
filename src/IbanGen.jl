@@ -150,7 +150,7 @@ end
 """
     iban(iban_str::String)::Dict{String,String}
 
-Generate an IBAN from the provided string.     
+Validated the provided string and parse it into an IBAN structure.     
  
 ## Example
 ```julia    

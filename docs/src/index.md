@@ -47,6 +47,13 @@ ERROR: ValidationException value: "XX004748"
 invalid characters [Iban.BankCode]
 ```
 
+**A note about validation**
+
+In the context of IbanGen, an IBAN is valid if it matches the syntactic definition in the IBAN Registry( see [Reference](@ref) )
+and makes no claims about semantic correctness. Following the example of `iban_random(CountryCode = "DE")`, the generated 
+`BankCode` is valid in that it is a numeric string of length 8 - it is unlikely to be a code of an actual bank. The same 
+applies to `AccountNumber` which is a numeric string of length 10 but does not represent a real account.    
+
 ---
 
 ## Library
